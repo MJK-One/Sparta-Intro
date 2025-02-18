@@ -1,4 +1,37 @@
 <!-- slide2.html -->
 <div>
-    <h2>팀원 소개</h2>
+    <h2 style="margin-bottom: 90px;">팀원 소개</h2>
+    <div class="team-container">
+        <div class="team-member" onclick="openModal(0)">
+            <img src="./img/민준.png" alt="팀원1">
+            <p>김민준</p>
+        </div>
+        <div class="team-member" onclick="openModal(1)">
+            <img src="./img/기원.png" alt="팀원2">
+            <p>기원</p>
+        </div>
+        <div class="team-member" onclick="openModal(2)">
+            <img src="./img/광민.png" alt="팀원3">
+            <p>김광민</p>
+        </div>
+        <div class="team-member" onclick="openModal(3)">
+            <img src="./img/관형.png" alt="팀원4">
+            <p>김관형</p>
+        </div>
+    </div>
+    
+    </div>
+    <!-- 모달 -->
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <img id="modal-img" src="" alt="팀원 이미지">
+            <div class="modal-text">
+                <h2 id="modal-name"></h2>
+                <p id="modal-info"></p>
+                <p id="modal-mbti"></p>
+                <p id="modal-blog"></p>
+            </div>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+    </div>
 </div>

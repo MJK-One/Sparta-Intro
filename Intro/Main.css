@@ -141,3 +141,98 @@ footer {
     color : orange;
     transition: color 0.8s; 
 }
+
+
+/* ************
+    slide2 css
+   ************
+*/
+.team-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.team-member {
+    text-align: center;
+    cursor: pointer;
+}
+
+.team-member img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+.team-member img:hover {
+    transform: scale(1.1);
+}
+
+/* 모달 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 모달 컨텐츠 */
+.modal-content {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    gap: 30px; /* 이미지와 텍스트 간격 조정 */
+    padding: 20px;
+    width: 90%;
+    max-width: 700px; /* 최대 너비 설정 */
+    height: auto; /* 높이 자동 조정 */
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 모달 이미지 */
+.modal img {
+    width: 150px;  /* 이미지 크기 조정 */
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover; /* 이미지 비율 유지 */
+}
+
+/* 모달 텍스트 */
+.modal-text {
+    text-align: left;
+    flex: 1;
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word; /* 글자가 넘치지 않도록 설정 */
+    overflow: hidden;
+}
+
+/* 닫기 버튼 */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#modal-blog a {
+    color: rgb(32, 32, 35); /* 원하는 색상 */
+    font-weight: bold; /* 굵게 */
+    text-decoration: underline; /* 밑줄 추가 */
+}
+
+#modal-blog a:hover {
+    color: rgb(114, 107, 107); /* 마우스 올렸을 때 색상 변경 */
+}
