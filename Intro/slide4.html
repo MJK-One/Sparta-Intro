@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>guestbook_v3</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+        * {
+            font-family: 'Gowun Dodum', sans-serif;
+        }
+
+
+        /* 방명록 목록 부분분*/
+        .guestbook {
+            margin: 20px auto;
+            width: 1000px;
+        }
+        
+
+        /* 방명록 작성 부분분 */
+        .mypostingbox {
+            width: 1000px;
+            margin: 100px auto 20px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 3px 0px black;
+        }
+
+
+        /* 방명록 작성 버튼 */
+        .mybtn {
+            width: 200px;
+            margin: 20px 0px 5px auto;
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+    
+
+        /* new 뱃찌 크기 */
+        .new-badge {
+            width: 40px;
+            height: auto;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        
+
+    </style>
+
+    <script type="module">
+        // Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // 방명록 데이터 로드
+        async function loadGuestbookEntries() {
+            const q = query(collection(db, "guestbook"), orderBy("date", "desc")); // 최신순 정렬
+            let docs = await getDocs(q);
+
+            docs.forEach((doc) => {
+                let row = doc.data();
+                let name = row['name'];
+                let comment = row['comment'];
+                let date = row['date'];
+
+                let newBadgeHtml = "";
+                let currentTime = new Date();
+                let postedTime = new Date(date);
+                let timeDiff = (currentTime - postedTime) / 1000; // 초 단위 차이
+
+                if (timeDiff < 600) { // 10분 내에 작성된 글에만 "new" 배지 추가
+                    newBadgeHtml = `<img src="./img/new_icon.png" class="new-badge" alt="New">`;
+                }
+
+                let temp_html = `
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-name">${name} ${newBadgeHtml}</h5>
+                            <p class="card-text">${comment}</p>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">${date}</small>
+                        </div>
+                    </div>
+                </div>`;
+
+                $('#text').append(temp_html);
+            });
+        }
+
+        // 새 글 추가 함수 (UI 업데이트 포함)
+        async function addNewEntry(name, comment, date) {
+            let newHtml = `
+            <div class="col new-entry">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-name">${name} 
+                            <img src="new_icon.png" class="new-badge" alt="New">
+                        </h5>
+                        <p class="card-text">${comment}</p>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">${date}</small>
+                    </div>
+                </div>
+            </div>`;
+
+            $('#text').prepend(newHtml);
+
+            // "new" 배지 10초 후 제거
+            setTimeout(() => {
+                $(".new-entry img.new-badge").fadeOut(500, function () {
+                    $(this).remove();
+                });
+            }, 10000);
+        }
+
+        // 문서가 로드된 후 실행
+        $(document).ready(function () {
+            loadGuestbookEntries();
+
+            $("#postingbtn").click(async function () {
+                let name = $('#name').val().trim();
+                let comment = $('#comment').val().trim();
+
+                if (!name || !comment) {
+                    alert("닉네임과 내용을 입력해주세요.");
+                    return;
+                }
+
+                let currentDate = new Date();
+                let date = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()} ` +
+                    `${currentDate.getHours()}:${currentDate.getMinutes()}`;
+
+                let doc = { 'name': name, 'comment': comment, 'date': date };
+
+                try {
+                    await addDoc(collection(db, "guestbook"), doc);
+                    alert('작성 완료');
+                    addNewEntry(name, comment, date);  // 동적 UI 업데이트
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="mypostingbox">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" placeholder="닉네임">
+            <label for="name">닉네임</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" id="comment" placeholder="내용" style="height: 150px;"></textarea>
+            <label for="comment">내용</label>
+        </div>
+        <div class="mybtn">
+            <button id="postingbtn" type="button" class="btn btn-dark">방명록 작성</button>
+        </div>
+    </div>
+
+    <div class="guestbook">
+        <div id="text" class="row row-cols-1 row-cols-md-1 g-4"></div>
+    </div>
+</body>
+
+</html>

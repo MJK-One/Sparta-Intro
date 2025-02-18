@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="./Main.css" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sigmar&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Sigmar&display=swap" rel="stylesheet">
+
+    <title>Project Easy</title>
+</head>
+<body>
+    <header>
+        <!-- 메인 로고 -->
+        <h1 class="main-logo">Project Easy</h1>
+    </header>
+
+    <div class="swiper mySwiper">
+        <!-- Swiper 슬라이드 -->
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" id="slide1"></div>
+            <div class="swiper-slide" id="slide2"></div>
+            <div class="swiper-slide" id="slide3"></div>
+            <div class="swiper-slide" id="slide4"></div>
+        </div>
+        <div class="swiper-pagination"></div> <!-- 페이지네이션 -->
+    </div>
+
+    <footer>
+        <!-- 메뉴바 -->
+        <div class="menubar">
+            <div class="sparta-logo">
+                <img class="sparta" src="./img/spartalog.svg">
+            </div>
+            <div class="menu">
+                <ul>
+                    <li><a href="#" class="menu-item active" data-slide="0">팀 소개</a></li>
+                    <li><a href="#" class="menu-item" data-slide="1">팀원 소개</a></li>
+                    <li><a href="#" class="menu-item" data-slide="2">협업 스타일</a></li>
+                    <li><a href="#" class="menu-item" data-slide="3">방명록</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Swiper 초기화 및 메뉴 클릭 이벤트 처리 -->
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            pagination: {
+                el: ".swiper-pagination", // 페이지네이션 설정
+                clickable: true, // 클릭 가능하도록 설정
+            },
+        });
+
+        // 페이지네이션 클릭 시 active 클래스 업데이트
+        swiper.on('slideChange', function () {
+            const activeIndex = swiper.activeIndex;
+            document.querySelectorAll('.menu-item').forEach(menu => {
+                menu.classList.remove('active');
+            });
+            document.querySelector(`.menu-item[data-slide="${activeIndex}"]`).classList.add('active');
+        });
+        
+        async function fetchHtmlAsText(url) {
+            return await (await fetch(url)).text();
+        }
+
+        async function importPage(target) {
+            document.querySelector('#' + target).innerHTML = await fetchHtmlAsText(target + '.html');
+        }
+
+        // 각 슬라이드에 HTML 파일 로드
+        async function loadSlides() {
+            await importPage('slide1'); // slide1.html의 내용을 slide1에 로드
+            await importPage('slide2'); // slide2.html의 내용을 slide2에 로드
+            await importPage('slide3'); // slide3.html의 내용을 slide3에 로드
+            await importPage('slide4'); // slide4.html의 내용을 slide4에 로드
+        }
+
+        loadSlides().then(() => {
+            // 기본으로 첫 번째 슬라이드로 이동
+            swiper.slideTo(0);
+        });
+        
+        // 메뉴 클릭 시 슬라이드 이동 및 active 클래스 적용
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function(event) {
+                event.preventDefault(); // 기본 링크 동작 방지
+
+                // 모든 메뉴 항목에서 active 클래스 제거
+                document.querySelectorAll('.menu-item').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+
+                // 클릭한 메뉴에 active 클래스 추가
+                this.classList.add('active');
+
+                const slideIndex = this.getAttribute('data-slide'); // 클릭한 메뉴의 슬라이드 인덱스 가져오기
+                swiper.slideTo(slideIndex); // 해당 슬라이드로 이동
+
+                // 페이지네이션 업데이트
+                swiper.pagination.update(); // 페이지네이션 업데이트
+            });
+        });
+    </script>
+</body>
+</html>
