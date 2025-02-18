@@ -11,19 +11,20 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
         * {
             font-family: 'Gowun Dodum', sans-serif;
         }
 
 
-        /* 방명록 목록 부분분*/
+        /* 방명록 목록 부분*/
         .guestbook {
             margin: 20px auto;
             width: 1000px;
         }
-        
 
-        /* 방명록 작성 부분분 */
+
+        /* 방명록 작성 부분 */
         .mypostingbox {
             width: 1000px;
             margin: 100px auto 20px;
@@ -41,27 +42,61 @@
             justify-content: center;
             margin-top: 10px;
         }
-    
 
-        /* new 뱃찌 크기 */
+
+        /* 새글 뱃찌 크기 */
         .new-badge {
             width: 40px;
             height: auto;
             margin-left: 10px;
             vertical-align: middle;
         }
-        
 
+        .toggle-comment {
+            margin: 1px 1px 10px 10px;
+        }
+
+        .add-comment {
+            height: 40px;
+        }
+
+        .comment-A {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .comment-input {
+            flex: 1;
+        }
     </style>
 
     <script type="module">
-        // Firebase SDK
+        // =========================Fire Base Setting========================= //
+        // Firebase SDK 라이브러리 가져오기
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
         import { query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // 방명록 데이터 로드
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: ,
+            authDomain: ,
+            projectId: ,
+            storageBucket: ,
+            messagingSenderId: ,
+            appId: ,
+            measurementId: 
+        };
+
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // =========================Fire Base Setting========================= //
+
+        // =========================방명록 작성 파트========================= //
         async function loadGuestbookEntries() {
             const q = query(collection(db, "guestbook"), orderBy("date", "desc")); // 최신순 정렬
             let docs = await getDocs(q);
@@ -87,6 +122,16 @@
                         <div class="card-body">
                             <h5 class="card-name">${name} ${newBadgeHtml}</h5>
                             <p class="card-text">${comment}</p>
+                            <button class="btn btn-sm btn-dark toggle-comment" data-id="${doc.id}">⬇</button>
+                                <div class="comment-box" id="comment-box-${doc.id}" style="display: none;">
+                                    <div class="comment-A">
+                                    <input type="text" class="form-control comment-input" id="comment-input-${doc.id}" placeholder="댓글을 입력하세요">
+                                    <button class="btn btn-sm btn-dark add-comment" data-id="${doc.id}">댓글 작성</button>
+                                    </div>
+
+                                    <div class="comment-list" id="comment-list-${doc.id}">
+                                    </div>
+                                </div>
                         </div>
                         <div class="card-footer">
                             <small class="text-muted">${date}</small>
@@ -98,6 +143,29 @@
             });
         }
 
+        async function loadComments(docId) {
+            const q = query(collection(db, `guestbook/${docId}/comments`), orderBy("date", "asc"));
+            let docs = await getDocs(q);
+            $(`#comment-list-${docId}`).empty();
+
+            docs.forEach((doc) => {
+                let row = doc.data();
+                let name = row['name'];
+                let text = row['text'];
+                let date = row['date'].toDate();
+                let formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+
+                let commentHtml = `<div class="comment"><strong>${name}</strong>: ${text} <small>(${formattedDate})</small></div>`;
+                $(`#comment-list-${docId}`).append(commentHtml);
+            });
+        }
+
+        $(document).on("click", ".toggle-comment", function () {
+            let docId = $(this).attr("data-id");
+            $(`#comment-box-${docId}`).toggle();
+            loadComments(docId);
+        });
+
         // 새 글 추가 함수 (UI 업데이트 포함)
         async function addNewEntry(name, comment, date) {
             let newHtml = `
@@ -105,7 +173,7 @@
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-name">${name} 
-                            <img src="new_icon.png" class="new-badge" alt="New">
+                            <img src="./img/new_icon.png" class="new-badge" alt="New">
                         </h5>
                         <p class="card-text">${comment}</p>
                     </div>
@@ -117,7 +185,7 @@
 
             $('#text').prepend(newHtml);
 
-            // "new" 배지 10초 후 제거
+            // 배지 10초
             setTimeout(() => {
                 $(".new-entry img.new-badge").fadeOut(500, function () {
                     $(this).remove();
@@ -134,7 +202,6 @@
                 let comment = $('#comment').val().trim();
 
                 if (!name || !comment) {
-                    alert("닉네임과 내용을 입력해주세요.");
                     return;
                 }
 
@@ -153,6 +220,29 @@
                 }
             });
         });
+        // =========================방명록 작성 파트========================= //
+
+        // =========================댓글 작성 파트========================= //
+        // 닉네임 = 익명
+        async function saveCommentToFirestore(docId, text) {
+            const name = "익명 ";
+            await addDoc(collection(db, `guestbook/${docId}/comments`), {
+                name,
+                text,
+                date: Timestamp.now()
+            });
+            loadComments(docId); // 댓글 다시 불러오기
+        }
+
+        $(document).on("click", ".add-comment", async function () {
+            let docId = $(this).attr("data-id");
+            let text = $(`#comment-input-${docId}`).val().trim();
+            if (!text) return;
+
+            await saveCommentToFirestore(docId, text);
+            $(`#comment-input-${docId}`).val("");
+        });
+        // =========================댓글 작성 파트========================= //
     </script>
 </head>
 
