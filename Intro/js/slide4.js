@@ -3,7 +3,6 @@ import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimest
 
 // ✅ Firebase 설정
 const firebaseConfig = {
-
 };
 
 // ✅ Firebase 초기화
@@ -116,6 +115,8 @@ $("#postingbtn").click(async function () {
         await addDoc(collection(db, "guestbook"), doc);
         alert("방명록이 작성되었습니다");
         addNewEntry(name, comment, date);
+
+        location.reload(); // 성공시 페이지 리다이렉트
     } catch (error) {
         alert("방명록 작성 중 오류가 발생");
     }
@@ -149,4 +150,3 @@ $(document).on("click", ".toggle-comment", function () {
 $(document).ready(function () {
     loadGuestbookEntries();
 });
-

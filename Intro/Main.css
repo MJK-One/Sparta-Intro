@@ -28,6 +28,8 @@ header {
     color : orange;
     background-color: white;
     height: 100%;
+    padding-left: 20px;
+    padding-top : 12px;
 }
 
 .swiper {
@@ -70,6 +72,7 @@ header {
 
 footer {
     height: 9%;
+    background-color: rgb(180, 180, 180);
 }
 .menubar {
     width : 100%;
@@ -105,6 +108,7 @@ footer {
     display: flex;
     font-size: 30px;
     gap : 15%;
+    padding-top: 20px;
 }
 
 .menu li {
@@ -152,6 +156,7 @@ footer {
     justify-content: center;
     gap: 20px;
     margin-top: 20px;
+    font-family: "Black Han Sans", serif;
 }
 
 .team-member {
@@ -168,6 +173,12 @@ footer {
 
 .team-member img:hover {
     transform: scale(1.1);
+}
+
+.team-member:hover p {
+    padding-top : 15px;
+    color: orange;
+    transition: transform 0.8s ease;
 }
 
 /* 모달 스타일 */

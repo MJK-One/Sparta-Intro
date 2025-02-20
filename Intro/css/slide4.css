@@ -12,20 +12,21 @@
     gap: 20px; /* 간격 조정 */
     margin-top: 30px;
 }
-
+.slide4-con {
+    display: flex;
+    width: 100%;
+    height:70%;
+    gap: 5%;
+}
 
 /* 방명록 작성 부분 */
 .mypostingbox {
-    background-color: white;
-    flex: 1;
-    max-width: 35%;
-    width: 100%; /* 부모 요소를 기준으로 크기 조정 */
+    width: 30%; /* 부모 요소를 기준으로 크기 조정 */
     height: auto;
-    /* background-color: green; */
-    margin: 50px auto;
+    background-color:bisque;;
     padding: 20px;
     border-radius: 5px;
-    box-shadow: 0px 0px 6px 0px black;
+    margin-right: 30px;
 }
 
 .mypostingbox:hover {
@@ -39,16 +40,15 @@
     padding: 8px;
 }
 
-
 /* 방명록 목록 부분 */
 .guestbook {
-    flex: 1;
-    max-width: 800px;
-    width: 100%; /* 부모 크기에 맞게 자동 조정 */
-    height: auto; /* 높이 자동 조정 */
-    /* background-color: blue; */
-    margin: 40px auto;
+    width: 70%;
+    height: auto;
     text-align: left;
+    max-height: 70%; 
+    margin-top : 10px;
+    overflow-y: auto;
+    padding-right: 10px; 
 }
 
 .card {
@@ -57,9 +57,9 @@
     border-radius: 10px;
     box-shadow: 0px 1px 4px 0px black;
     transition: transform 0.2s ease-in-out;
-    max-width: 700px; /* ✅ 카드의 최대 너비 조절 */
     padding: 12px;
     font-size: 14px;
+    margin-left : 5%;
 }
 
 .card:hover {
@@ -73,6 +73,7 @@
     align-items: center;
     gap: 2px;
     font-size: 16px;
+    padding-top : 5px;
 }
 
 .card-footer small {
@@ -95,7 +96,6 @@
     padding: 4px 8px;
     font-size: 12px;
     border-radius: 5px;
-    transition: background 0.2s;
 }
 
 .toggle-comment:hover {
@@ -121,13 +121,17 @@
 
 /* 방명록 작성 버튼 */
 .mybtn {
-    width: 200px;
-    margin: 60px 10px auto auto;
     display: flex;
     justify-content: center;
     margin-top: 10px;
+    float: right;
 }
-
+.mybtn button {
+    color: #000;
+    background-color: #ffc107;
+    border-color: #ffc107;
+    font-weight: 600;
+}
 
 
 .new-badge {
@@ -146,7 +150,6 @@
     padding-top: 0px; /* ✅ 위쪽 여백 최소화 */
     padding-bottom: 1px;
     margin-bottom: 0; 
-
 }
 
 
